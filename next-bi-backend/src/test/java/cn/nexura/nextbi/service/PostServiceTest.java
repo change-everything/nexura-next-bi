@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 /**
  * 帖子服务测试
  *
- 
  */
 @SpringBootTest
 class PostServiceTest {

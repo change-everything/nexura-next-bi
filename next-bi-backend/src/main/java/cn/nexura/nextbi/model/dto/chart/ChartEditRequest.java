@@ -8,7 +8,6 @@ import java.util.Date;
 /**
  * 更新请求
  *
- 
  */
 @Data
 public class ChartEditRequest implements Serializable {
@@ -17,6 +16,11 @@ public class ChartEditRequest implements Serializable {
      * id
      */
     private Long id;
+
+    /**
+     * 名称
+     */
+    private String name;
 
     /**
      * 分析目标

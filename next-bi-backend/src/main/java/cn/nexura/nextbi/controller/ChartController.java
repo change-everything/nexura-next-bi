@@ -5,31 +5,37 @@ import cn.nexura.nextbi.common.BaseResponse;
 import cn.nexura.nextbi.common.DeleteRequest;
 import cn.nexura.nextbi.common.ErrorCode;
 import cn.nexura.nextbi.common.ResultUtils;
+import cn.nexura.nextbi.constant.FileConstant;
 import cn.nexura.nextbi.constant.UserConstant;
 import cn.nexura.nextbi.exception.BusinessException;
 import cn.nexura.nextbi.exception.ThrowUtils;
-import cn.nexura.nextbi.model.dto.chart.ChartAddRequest;
-import cn.nexura.nextbi.model.dto.chart.ChartEditRequest;
-import cn.nexura.nextbi.model.dto.chart.ChartQueryRequest;
-import cn.nexura.nextbi.model.dto.chart.ChartUpdateRequest;
+import cn.nexura.nextbi.manager.AiManager;
+import cn.nexura.nextbi.model.dto.chart.*;
+import cn.nexura.nextbi.model.dto.file.UploadFileRequest;
 import cn.nexura.nextbi.model.entity.Chart;
 import cn.nexura.nextbi.model.entity.User;
+import cn.nexura.nextbi.model.enums.FileUploadBizEnum;
+import cn.nexura.nextbi.model.vo.BiResponse;
 import cn.nexura.nextbi.service.ChartService;
 import cn.nexura.nextbi.service.UserService;
+import cn.nexura.nextbi.utils.ExcelUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
 
 /**
  * 帖子接口
  *
- 
  */
 @RestController
 @RequestMapping("/chart")
@@ -42,9 +48,84 @@ public class ChartController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private AiManager aiManager;
+
     private final static Gson GSON = new Gson();
 
-    // region 增删改查
+
+    /**
+     * 智能分析
+     *
+     * @param multipartFile
+     * @param request
+     * @return
+     */
+    @PostMapping("/gen")
+    public BaseResponse<BiResponse> genChartByAi(@RequestPart("file") MultipartFile multipartFile,
+                                             GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
+
+        String goal = genChartByAiRequest.getGoal();
+        String name = genChartByAiRequest.getName();
+        String chartType = genChartByAiRequest.getChartType();
+
+        // 校验
+        ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目标为空");
+        ThrowUtils.throwIf(StringUtils.isNotBlank(name) && name.length() > 100, ErrorCode.PARAMS_ERROR, "名称过长");
+
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR, "未登录");
+        }
+
+        // 用户输入
+        StringBuilder userInput = new StringBuilder();
+        userInput.append("Analysis goal:").append("\n");
+
+        String userGoal = goal;
+        if (StringUtils.isNotBlank(chartType)) {
+            userGoal += ",请使用" + chartType;
+        }
+
+        userInput.append(userGoal).append("\n");
+
+        // 获得数据
+        String data = ExcelUtils.excelToCsv(multipartFile);
+        userInput.append("Row data:").append("\n").append(data).append("\n");
+
+        long biModelId = 1709156902984093697L;
+
+        String result = aiManager.doChat(biModelId, userInput.toString());
+        String[] splitRes = result.split("【【【【【");
+        if (splitRes.length < 3) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI生成错误");
+        }
+
+
+        String genChart = splitRes[1].trim();
+        String genResult = splitRes[2].trim();
+
+        // 保存信息
+        Chart chart = new Chart();
+        chart.setName(name);
+        chart.setGoal(userGoal);
+        chart.setChartData(data);
+        chart.setChartType(chartType);
+        chart.setGenChart(genChart);
+        chart.setGenResult(genResult);
+        chart.setUserId(loginUser.getId());
+        boolean save = chartService.save(chart);
+        ThrowUtils.throwIf(!save, ErrorCode.SYSTEM_ERROR, "信息保存失败");
+
+        BiResponse biResponse = BiResponse.builder()
+                .genResult(genResult)
+                .genChart(genChart)
+                .chartId(chart.getId())
+                .build();
+
+        return ResultUtils.success(biResponse);
+    }
+
 
     /**
      * 创建

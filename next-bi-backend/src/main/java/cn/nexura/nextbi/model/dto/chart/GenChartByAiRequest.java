@@ -5,12 +5,12 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 创建请求
+ * 文件上传请求
  *
- * @author peiyp
+ * @author 86188
  */
 @Data
-public class ChartAddRequest implements Serializable {
+public class GenChartByAiRequest implements Serializable {
 
     /**
      * 分析目标
@@ -31,8 +31,6 @@ public class ChartAddRequest implements Serializable {
      * 图表类型
      */
     private String chartType;
-
-
 
     private static final long serialVersionUID = 1L;
 }

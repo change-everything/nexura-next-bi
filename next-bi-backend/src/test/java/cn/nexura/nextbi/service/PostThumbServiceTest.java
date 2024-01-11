@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 /**
  * 帖子点赞服务测试
  *
- 
  */
 @SpringBootTest
 class PostThumbServiceTest {

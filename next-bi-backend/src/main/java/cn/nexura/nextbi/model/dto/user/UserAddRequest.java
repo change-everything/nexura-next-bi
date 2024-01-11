@@ -6,7 +6,6 @@ import lombok.Data;
 /**
  * 用户创建请求
  *
- 
  */
 @Data
 public class UserAddRequest implements Serializable {

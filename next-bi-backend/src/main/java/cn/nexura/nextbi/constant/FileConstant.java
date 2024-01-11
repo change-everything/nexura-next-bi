@@ -3,7 +3,6 @@ package cn.nexura.nextbi.constant;
 /**
  * 文件常量
  *
- 
  */
 public interface FileConstant {
 

@@ -3,7 +3,6 @@ package cn.nexura.nextbi.common;
 /**
  * 返回工具类
  *
- 
  */
 public class ResultUtils {
 
