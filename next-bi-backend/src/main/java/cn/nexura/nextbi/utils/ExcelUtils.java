@@ -11,10 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -48,12 +45,46 @@ public class ExcelUtils {
         LinkedHashMap<Integer, String> headerMap = (LinkedHashMap<Integer, String>) list.get(0);
         List<String> headerList = headerMap.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
         stringBuilder.append(StrUtil.join(",", headerList)).append("\n");
-        for (Map<Integer, String> integerStringMap : list) {
+        for (int i = 1; i < list.size(); i++) {
+            Map<Integer, String> integerStringMap = list.get(i);
             LinkedHashMap<Integer, String> dataMap = (LinkedHashMap<Integer, String>) integerStringMap;
             List<String> dataList = dataMap.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
             stringBuilder.append(StrUtil.join(",", dataList)).append("\n");
         }
         return stringBuilder.toString();
+    }
+
+
+    public static List<List<String>> excelToMap(MultipartFile multipartFile) {
+        // 读取数据
+        List<Map<Integer, String>> list = null;
+        try {
+            list = EasyExcel.read(multipartFile.getInputStream())
+                    .excelType(ExcelTypeEnum.XLSX)
+                    .sheet()
+                    .headRowNumber(0)
+                    .doReadSync();
+        } catch (IOException e) {
+            log.error("表格处理错误");
+            throw new RuntimeException(e);
+        }
+        if (CollUtil.isEmpty(list)) {
+            return null;
+        }
+
+        // 转换为csv
+        List<List<String>> dataLists = new ArrayList<>();
+        // 读取表头
+        LinkedHashMap<Integer, String> headerMap = (LinkedHashMap<Integer, String>) list.get(0);
+        List<String> headerList = headerMap.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
+        dataLists.add(headerList);
+        for (int i = 1; i < list.size(); i++) {
+            Map<Integer, String> integerStringMap = list.get(i);
+            LinkedHashMap<Integer, String> dataMap = (LinkedHashMap<Integer, String>) integerStringMap;
+            List<String> dataList = dataMap.values().stream().filter(Objects::nonNull).collect(Collectors.toList());
+            dataLists.add(dataList);
+        }
+        return dataLists;
     }
 
 }

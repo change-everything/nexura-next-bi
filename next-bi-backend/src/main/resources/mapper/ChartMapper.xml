@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.nexura.nextbi.mapper.ChartMapper">
+
+
+    <insert id="insertDataBatch" parameterType="java.util.List">
+        insert into chart_${chartId}
+        (
+        <foreach collection="tableData[0]" item="columnName" separator=",">
+            ${columnName}
+        </foreach>
+        )
+        values
+        <foreach collection="tableData" item="rowData" separator=",">
+            <if test="rowData neq tableData[0]">
+                (
+                <foreach collection="rowData" item="value" separator=",">
+                    #{value}
+                </foreach>
+                )
+            </if>
+        </foreach>
+    </insert>
+
+
+    <update id="createTable">
+        create table if not exists chart_${chartId}
+        (
+            id bigint auto_increment comment 'id' primary key,
+            <foreach collection="tableField" item="field" separator=",">
+                ${field} varchar(64) not null
+            </foreach>
+
+        ) comment '分析数据' collate = utf8mb4_unicode_ci;
+    </update>
+
+
+
+</mapper>

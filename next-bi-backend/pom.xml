@@ -20,6 +20,16 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>3.18.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.yucongming</groupId>
             <artifactId>yucongming-java-sdk</artifactId>
             <version>0.0.3</version>

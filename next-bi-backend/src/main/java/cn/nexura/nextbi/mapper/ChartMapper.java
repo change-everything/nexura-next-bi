@@ -2,6 +2,10 @@ package cn.nexura.nextbi.mapper;
 
 import cn.nexura.nextbi.model.entity.Chart;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author 86188
@@ -9,7 +13,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2024-01-10 16:33:02
 * @Entity cn.nexura.nextbi.model.entity.Chart
 */
+@Mapper
 public interface ChartMapper extends BaseMapper<Chart> {
+
+    boolean createTable(@Param("tableField") List<String> tableField, @Param("chartId") Long chartId);
+
+    boolean insertDataBatch(@Param("tableData") List<String[]> tableData, @Param("chartId") Long chartId);
 
 }
 

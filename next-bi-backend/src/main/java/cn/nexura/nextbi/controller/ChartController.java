@@ -1,5 +1,6 @@
 package cn.nexura.nextbi.controller;
 
+import cn.hutool.core.io.FileUtil;
 import cn.nexura.nextbi.annotation.AuthCheck;
 import cn.nexura.nextbi.common.BaseResponse;
 import cn.nexura.nextbi.common.DeleteRequest;
@@ -10,6 +11,7 @@ import cn.nexura.nextbi.constant.UserConstant;
 import cn.nexura.nextbi.exception.BusinessException;
 import cn.nexura.nextbi.exception.ThrowUtils;
 import cn.nexura.nextbi.manager.AiManager;
+import cn.nexura.nextbi.manager.RedisLimiterManager;
 import cn.nexura.nextbi.model.dto.chart.*;
 import cn.nexura.nextbi.model.dto.file.UploadFileRequest;
 import cn.nexura.nextbi.model.entity.Chart;
@@ -31,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,8 +51,9 @@ public class ChartController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private AiManager aiManager;
+
+//    @Resource
+//    private RedisLimiterManager redisLimiterManager;
 
     private final static Gson GSON = new Gson();
 
@@ -65,6 +69,22 @@ public class ChartController {
     public BaseResponse<BiResponse> genChartByAi(@RequestPart("file") MultipartFile multipartFile,
                                              GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
 
+
+        User loginUser = userService.getLoginUser(request);
+
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR, "未登录");
+        }
+
+
+        long size = multipartFile.getSize();
+        ThrowUtils.throwIf(size > 1024 * 1024L, ErrorCode.PARAMS_ERROR, "文件过大");
+
+        String originalFilename = multipartFile.getOriginalFilename();
+        String suffix = FileUtil.getSuffix(originalFilename);
+        List<String> validSuffixList = Arrays.asList("xlsx", "csv", "xlx");
+        ThrowUtils.throwIf(!validSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件格式不正确");
+
         String goal = genChartByAiRequest.getGoal();
         String name = genChartByAiRequest.getName();
         String chartType = genChartByAiRequest.getChartType();
@@ -73,55 +93,11 @@ public class ChartController {
         ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目标为空");
         ThrowUtils.throwIf(StringUtils.isNotBlank(name) && name.length() > 100, ErrorCode.PARAMS_ERROR, "名称过长");
 
-        User loginUser = userService.getLoginUser(request);
-        if (loginUser == null) {
-            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR, "未登录");
-        }
 
-        // 用户输入
-        StringBuilder userInput = new StringBuilder();
-        userInput.append("Analysis goal:").append("\n");
+        // 限流操作
+//        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
 
-        String userGoal = goal;
-        if (StringUtils.isNotBlank(chartType)) {
-            userGoal += ",请使用" + chartType;
-        }
-
-        userInput.append(userGoal).append("\n");
-
-        // 获得数据
-        String data = ExcelUtils.excelToCsv(multipartFile);
-        userInput.append("Row data:").append("\n").append(data).append("\n");
-
-        long biModelId = 1709156902984093697L;
-
-        String result = aiManager.doChat(biModelId, userInput.toString());
-        String[] splitRes = result.split("【【【【【");
-        if (splitRes.length < 3) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI生成错误");
-        }
-
-
-        String genChart = splitRes[1].trim();
-        String genResult = splitRes[2].trim();
-
-        // 保存信息
-        Chart chart = new Chart();
-        chart.setName(name);
-        chart.setGoal(userGoal);
-        chart.setChartData(data);
-        chart.setChartType(chartType);
-        chart.setGenChart(genChart);
-        chart.setGenResult(genResult);
-        chart.setUserId(loginUser.getId());
-        boolean save = chartService.save(chart);
-        ThrowUtils.throwIf(!save, ErrorCode.SYSTEM_ERROR, "信息保存失败");
-
-        BiResponse biResponse = BiResponse.builder()
-                .genResult(genResult)
-                .genChart(genChart)
-                .chartId(chart.getId())
-                .build();
+        BiResponse biResponse = chartService.doGenChart(multipartFile, loginUser, goal, name, chartType);
 
         return ResultUtils.success(biResponse);
     }

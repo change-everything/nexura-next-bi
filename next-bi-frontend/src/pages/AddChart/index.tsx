@@ -1,6 +1,5 @@
 import { genChartByAiUsingPost } from '@/services/next-bi/chartController';
 import { UploadOutlined } from '@ant-design/icons';
-import { useEmotionCss } from '@ant-design/use-emotion-css';
 import {
   Button,
   Card,
@@ -111,7 +110,9 @@ const AddChart: React.FC = () => {
                   >
                     提交
                   </Button>
-                  <Button htmlType="reset">重置</Button>
+                  <Button htmlType="reset" loading={submitting} disabled={submitting}>
+                    重置
+                  </Button>
                 </Space>
               </Form.Item>
             </Form>
