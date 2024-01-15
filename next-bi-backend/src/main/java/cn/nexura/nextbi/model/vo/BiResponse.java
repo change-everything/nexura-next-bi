@@ -16,4 +16,6 @@ public class BiResponse {
     private String genResult;
 
     private Long chartId;
+
+    private String chartData;
 }

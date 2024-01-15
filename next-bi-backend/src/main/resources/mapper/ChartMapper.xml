@@ -35,5 +35,9 @@
     </update>
 
 
+    <select id="getChartDataByChartId" resultType="java.util.Map">
+        select * from chart_${chartId}
+    </select>
+
 
 </mapper>

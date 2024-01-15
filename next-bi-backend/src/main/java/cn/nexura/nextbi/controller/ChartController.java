@@ -21,7 +21,9 @@ import cn.nexura.nextbi.model.vo.BiResponse;
 import cn.nexura.nextbi.service.ChartService;
 import cn.nexura.nextbi.service.UserService;
 import cn.nexura.nextbi.utils.ExcelUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -188,7 +190,7 @@ public class ChartController {
         if (chart == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        return ResultUtils.success(chart);
+        return ResultUtils.success(chartService.getChartData(chart));
     }
 
     /**

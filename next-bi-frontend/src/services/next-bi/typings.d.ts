@@ -69,6 +69,7 @@ declare namespace API {
     chartId?: string;
     genChart?: string;
     genResult?: string;
+    chartData?: string;
   };
 
   type Chart = {

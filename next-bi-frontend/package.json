@@ -49,10 +49,13 @@
     "@ant-design/icons": "^4.8.0",
     "@ant-design/pro-components": "^2.3.57",
     "@ant-design/use-emotion-css": "1.0.4",
+    "@handsontable/react": "^14.0.0",
     "@umijs/route-utils": "^2.2.2",
     "antd": "^5.2.2",
     "classnames": "^2.3.2",
     "echarts-for-react": "^3.0.2",
+    "exceljs": "^4.4.0",
+    "handsontable": "^14.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "omit.js": "^2.0.2",
@@ -61,7 +64,8 @@
     "react": "^18.2.0",
     "react-dev-inspector": "^1.8.4",
     "react-dom": "^18.2.0",
-    "react-helmet-async": "^1.3.0"
+    "react-helmet-async": "^1.3.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.1.5",

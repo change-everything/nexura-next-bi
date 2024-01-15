@@ -4,6 +4,7 @@ import cn.nexura.nextbi.model.dto.chart.ChartQueryRequest;
 import cn.nexura.nextbi.model.entity.User;
 import cn.nexura.nextbi.model.vo.BiResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import cn.nexura.nextbi.model.entity.Chart;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,4 +20,6 @@ public interface ChartService extends IService<Chart> {
      QueryWrapper<Chart> getQueryWrapper(ChartQueryRequest chartQueryRequest);
 
      BiResponse doGenChart(MultipartFile multipartFile, User loginUser, String goal, String name, String chartType);
+
+     Chart getChartData(Chart chart);
 }

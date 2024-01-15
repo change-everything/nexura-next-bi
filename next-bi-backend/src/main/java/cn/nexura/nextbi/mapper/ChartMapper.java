@@ -4,8 +4,10 @@ import cn.nexura.nextbi.model.entity.Chart;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author 86188
@@ -20,6 +22,7 @@ public interface ChartMapper extends BaseMapper<Chart> {
 
     boolean insertDataBatch(@Param("tableData") List<String[]> tableData, @Param("chartId") Long chartId);
 
+    List<Map<String, Object>> getChartDataByChartId(@Param("chartId") Long chartId);
 }
 
 
