@@ -104,6 +104,50 @@ public class ChartController {
         return ResultUtils.success(biResponse);
     }
 
+    /**
+     * 智能分析 异步
+     *
+     * @param multipartFile
+     * @param request
+     * @return
+     */
+    @PostMapping("/genAsync")
+    public BaseResponse<BiResponse> genChartByAiAsync(@RequestPart("file") MultipartFile multipartFile,
+                                                 GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
+
+
+        User loginUser = userService.getLoginUser(request);
+
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR, "未登录");
+        }
+
+
+        long size = multipartFile.getSize();
+        ThrowUtils.throwIf(size > 1024 * 1024L, ErrorCode.PARAMS_ERROR, "文件过大");
+
+        String originalFilename = multipartFile.getOriginalFilename();
+        String suffix = FileUtil.getSuffix(originalFilename);
+        List<String> validSuffixList = Arrays.asList("xlsx", "csv", "xlx");
+        ThrowUtils.throwIf(!validSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件格式不正确");
+
+        String goal = genChartByAiRequest.getGoal();
+        String name = genChartByAiRequest.getName();
+        String chartType = genChartByAiRequest.getChartType();
+
+        // 校验
+        ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目标为空");
+        ThrowUtils.throwIf(StringUtils.isNotBlank(name) && name.length() > 100, ErrorCode.PARAMS_ERROR, "名称过长");
+
+
+        // 限流操作
+//        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
+
+        BiResponse biResponse = chartService.doGenChartAsync(multipartFile, loginUser, goal, name, chartType);
+
+        return ResultUtils.success(biResponse);
+    }
+
 
     /**
      * 创建

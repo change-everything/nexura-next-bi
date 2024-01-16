@@ -1,3 +1,7 @@
+import {
+  genChartAsyncByAiUsingPost,
+  genChartByAiUsingPost,
+} from '@/services/next-bi/chartController';
 import { UploadOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -15,22 +19,14 @@ import {
 } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useState } from 'react';
-import ReactECharts from 'echarts-for-react';
-import Excel from 'exceljs';
+import { useForm } from 'antd/es/form/Form';
 import { HotTable } from '@handsontable/react';
-import 'handsontable/dist/handsontable.full.min.css';
-import { file } from '@umijs/bundler-utils/compiled/@babel/types';
-import {
-  genChartAsyncByAiUsingPost,
-  genChartByAiUsingPost,
-} from '@/services/next-bi/chartController';
+import Excel from 'exceljs';
 
 const AddChart: React.FC = () => {
-  const [chart, setChart] = useState<API.BiResponse>();
+  const [form, setForm] = useForm();
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [option, setOption] = useState<any>();
   const [excelData, setExcelData] = useState([]);
-
   const formItemLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
@@ -41,26 +37,18 @@ const AddChart: React.FC = () => {
       return;
     }
     setSubmitting(true);
-    setOption(undefined);
-    setChart(undefined);
     const params = {
       ...values,
       file: undefined,
     };
     try {
-      const res = await genChartByAiUsingPost(params, {}, values.file.file.originFileObj);
+      const res = await genChartAsyncByAiUsingPost(params, {}, values.file.file.originFileObj);
       console.log(res);
       if (!res?.data) {
         message.error('生成失败');
       } else {
-        message.success('生成成功');
-        const chartOption = JSON.parse(res.data.genChart ?? '');
-        if (!chartOption) {
-          throw new Error('图表代码解析错误');
-        } else {
-          setChart(res.data);
-          setOption(chartOption);
-        }
+        message.success('提交图表成功，稍后请在我的图表中查看');
+        form.resetFields();
       }
     } catch (e: any) {
       message.error('生成失败, ' + e.message);
@@ -69,11 +57,17 @@ const AddChart: React.FC = () => {
   };
 
   return (
-    <div className="addChart">
+    <div className="addChartAsync">
       <Row gutter={24}>
         <Col span={12}>
           <Card title="智能分析">
-            <Form name="validate_other" {...formItemLayout} onFinish={onFinish} initialValues={{}}>
+            <Form
+              form={form}
+              name="validate_other"
+              {...formItemLayout}
+              onFinish={onFinish}
+              initialValues={{}}
+            >
               <Form.Item
                 name="goal"
                 label="分析目标"
@@ -146,7 +140,8 @@ const AddChart: React.FC = () => {
               </Form.Item>
             </Form>
           </Card>
-          <Divider />
+        </Col>
+        <Col span={12}>
           <Card title="原始数据">
             {
               <div id="table_view">
@@ -161,17 +156,6 @@ const AddChart: React.FC = () => {
                 />
               </div>
             }
-            <Spin spinning={submitting} />
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="分析结论">
-            {chart?.genResult ?? <div>请先在左侧提交数据</div>}
-            <Spin spinning={submitting} />
-          </Card>
-          <Divider />
-          <Card title="可视化图表">
-            {option ? <ReactECharts option={option} /> : <div>请先在左侧提交数据</div>}
             <Spin spinning={submitting} />
           </Card>
         </Col>

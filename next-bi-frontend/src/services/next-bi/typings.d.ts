@@ -79,6 +79,8 @@ declare namespace API {
     genChart?: string;
     genResult?: string;
     goal?: string;
+    status?: string;
+    execMessage?: string;
     id?: string;
     isDelete?: number;
     name?: string;

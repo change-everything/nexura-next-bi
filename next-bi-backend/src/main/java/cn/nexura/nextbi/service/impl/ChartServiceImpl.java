@@ -12,6 +12,7 @@ import cn.nexura.nextbi.model.dto.chart.ChartQueryRequest;
 import cn.nexura.nextbi.model.entity.Chart;
 import cn.nexura.nextbi.model.entity.User;
 import cn.nexura.nextbi.model.vo.BiResponse;
+import cn.nexura.nextbi.mq.BiMessageProducer;
 import cn.nexura.nextbi.service.ChartService;
 import cn.nexura.nextbi.utils.ExcelUtils;
 import cn.nexura.nextbi.utils.SqlUtils;
@@ -24,9 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
 * @author 86188
@@ -39,6 +43,12 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
     @Resource
     private AiManager aiManager;
+
+    @Resource
+    private ThreadPoolExecutor threadPoolExecutor;
+
+    @Resource
+    private BiMessageProducer messageProducer;
 
 
 
@@ -85,24 +95,6 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         String data = ExcelUtils.excelToCsv(multipartFile);
 
 
-        // 根据\n分割数据，拆分为表头和数据
-        String[] rows = data.split("\n");
-        String[] tableHeaders = rows[0].split(",");
-        List<String> tableField = new ArrayList<>();
-        List<String[]> tableDataList = new ArrayList<>();
-
-
-        for (String tableHeader : tableHeaders) {
-            String pinyin = PinyinUtil.getPinyin(tableHeader, "");
-            tableField.add(pinyin);
-        }
-        tableDataList.add(tableField.toArray(new String[0]));
-        for (int i = 1; i < rows.length; i++) {
-            String[] tableData = rows[i].split(",");
-            tableDataList.add(tableData);
-        }
-
-
         userInput.append("Row data:").append("\n").append(data).append("\n");
 
 
@@ -130,34 +122,89 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         boolean save = this.save(chart);
         ThrowUtils.throwIf(!save, ErrorCode.SYSTEM_ERROR, "信息保存失败");
 
-        // 根据表头进行建表操作
-        boolean b = baseMapper.createTable(tableField, chart.getId());
-//        ThrowUtils.throwIf(!b, ErrorCode.PARAMS_ERROR, "数据有误");
+        sharding(data, chart.getId());
 
-        // 根据数据，对数据表插入数据
-        boolean b1 = baseMapper.insertDataBatch(tableDataList, chart.getId());
-        ThrowUtils.throwIf(!b1, ErrorCode.PARAMS_ERROR, "数据有误");
-
-        BiResponse biResponse = BiResponse.builder()
+        return BiResponse.builder()
                 .genResult(genResult)
                 .genChart(genChart)
                 .chartId(chart.getId())
                 .chartData(getChartData(chart).getChartData())
                 .build();
-        return biResponse;
     }
 
     @Override
     public Chart getChartData(Chart chart) {
-
-
         // 根据id查询数据库
-        List<Map<String, Object>> chartData = baseMapper.getChartDataByChartId(123456789L);
+        List<Map<String, Object>> chartData = baseMapper.getChartDataByChartId(chart.getId());
 
         // 设置数据
         chart.setChartData(JSONUtil.toJsonStr(chartData));
         System.out.println(chart);
         return chart;
+    }
+
+    @Override
+    public BiResponse doGenChartAsync(MultipartFile multipartFile, User loginUser, String goal, String name, String chartType) {
+        // 用户输入
+        StringBuilder userInput = new StringBuilder();
+        userInput.append("Analysis goal:").append("\n");
+
+        String userGoal = goal;
+        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isNotBlank(chartType)) {
+            userGoal += ",请使用" + chartType;
+        }
+
+        userInput.append(userGoal).append("\n");
+
+        // 获得数据
+        String data = ExcelUtils.excelToCsv(multipartFile);
+
+
+        userInput.append("Row data:").append("\n").append(data).append("\n");
+
+        // 保存信息
+        Chart chart = new Chart();
+        chart.setName(name);
+        chart.setGoal(userGoal);
+        chart.setChartData(data);
+        chart.setChartType(chartType);
+        chart.setStatus("wait");
+        chart.setUserId(loginUser.getId());
+        boolean save = this.save(chart);
+        ThrowUtils.throwIf(!save, ErrorCode.SYSTEM_ERROR, "信息保存失败");
+
+        sharding(data, chart.getId());
+
+
+        messageProducer.sendMessage(chart.getId().toString());
+
+        return BiResponse.builder()
+                .chartId(chart.getId())
+                .build();
+    }
+
+
+    private void sharding(String data, long chartId) {
+
+        // 根据\n分割数据，拆分为表头和数据
+        String[] rows = data.split("\n");
+        String[] tableHeaders = rows[0].split(",");
+        List<String[]> tableDataList = new ArrayList<>();
+        List<String> tableField = new ArrayList<>(Arrays.asList(tableHeaders));
+
+        tableDataList.add(tableField.toArray(new String[0]));
+        for (int i = 1; i < rows.length; i++) {
+            String[] tableData = rows[i].split(",");
+            tableDataList.add(tableData);
+        }
+
+        // 根据表头进行建表操作
+        boolean b = baseMapper.createTable(tableField, chartId);
+
+        // 根据数据，对数据表插入数据
+        boolean b1 = baseMapper.insertDataBatch(tableDataList, chartId);
+        ThrowUtils.throwIf(!b1, ErrorCode.PARAMS_ERROR, "数据有误");
+
     }
 
 }

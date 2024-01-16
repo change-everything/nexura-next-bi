@@ -8,6 +8,7 @@ import {
   Input,
   List,
   message,
+  Result,
   Row,
   Select,
   Space,
@@ -26,6 +27,8 @@ const MyChart: React.FC = () => {
   const initSearchParams = {
     current: 1,
     pageSize: 10,
+    sortField: 'createTime',
+    sortOrder: 'desc',
   };
 
   const [searchParams, setSearchParams] = useState<API.ChartQueryRequest>({
@@ -101,23 +104,43 @@ const MyChart: React.FC = () => {
         }}
         dataSource={chartList}
         renderItem={(item) => (
-          <Card>
-            <List.Item key={item.id}>
+          <List.Item key={item.id}>
+            <Card>
               <List.Item.Meta
                 avatar={<Avatar src={currentUser?.userAvatar} />}
                 title={item.name}
                 description={'分析目标：' + item.goal}
               />
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Card>{item.genResult}</Card>
-                </Col>
-                <Col span={12}>
-                  <ReactECharts option={item.genChart && JSON.parse(item.genChart)} />
-                </Col>
-              </Row>
-            </List.Item>
-          </Card>
+              <>
+                {item.status === 'succeed' && (
+                  <>
+                    <Card>{item.genResult}</Card>
+
+                    <ReactECharts option={item.genChart && JSON.parse(item.genChart)} />
+                  </>
+                )}
+                {item.status === 'failed' && (
+                  <>
+                    <Result status="error" title="图表生成失败" subTitle={item.execMessage} />
+                  </>
+                )}
+                {item.status === 'wait' && (
+                  <>
+                    <Result
+                      status="warning"
+                      title="待生成"
+                      subTitle={item.execMessage ?? '当前任务繁忙，请耐心等待'}
+                    />
+                  </>
+                )}
+                {item.status === 'running' && (
+                  <>
+                    <Result status="info" title="图表生成中" subTitle={item.execMessage} />
+                  </>
+                )}
+              </>
+            </Card>
+          </List.Item>
         )}
       />
     </div>

@@ -27,10 +27,14 @@ spring:
   # todo 需替换配置，然后取消注释
   redis:
     database: 1
-    host: localhost
+    host: 120.46.207.211
     port: 6379
     timeout: 5000
-#    password: redis
+  rabbitmq:
+    port: 5672
+    host: 120.46.207.211
+
+  #    password: redis
   # Elasticsearch 配置
   # todo 需替换配置，然后取消注释
   elasticsearch:
