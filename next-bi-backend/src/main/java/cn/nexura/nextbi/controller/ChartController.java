@@ -234,7 +234,9 @@ public class ChartController {
         if (chart == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        return ResultUtils.success(chartService.getChartData(chart));
+        String chartData = chartService.getChartData(chart);
+        chart.setChartData(chartData);
+        return ResultUtils.success(chart);
     }
 
     /**

@@ -1,10 +1,11 @@
 export default [
   { path: '/user', layout: false, routes: [{ path: '/user/login', component: './User/Login' }] },
-  { path: '/', redirect: '/add_chart' },
-  { path: '/add_chart', name: '智能分析', icon: 'areaChart', component: './AddChart' },
+  { path: '/', redirect: '/add_chart_async' },
+  // { path: '/add_chart', name: '智能分析', icon: 'areaChart', component: './AddChart' },
+  { path: '/detail_chart/:id', icon: 'areaChart', component: './DetailChart' },
   {
     path: '/add_chart_async',
-    name: '智能分析(异步)',
+    name: '智能分析',
     icon: 'radarChart',
     component: './AddChartAsync',
   },

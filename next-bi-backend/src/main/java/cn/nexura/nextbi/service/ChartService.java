@@ -24,5 +24,5 @@ public interface ChartService extends IService<Chart> {
 
      BiResponse doGenChartAsync(MultipartFile multipartFile, User loginUser, String goal, String name, String chartType);
 
-     Chart getChartData(Chart chart);
+     String getChartData(Chart chart);
 }

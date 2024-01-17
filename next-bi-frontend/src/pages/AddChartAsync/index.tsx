@@ -22,6 +22,7 @@ import React, { useState } from 'react';
 import { useForm } from 'antd/es/form/Form';
 import { HotTable } from '@handsontable/react';
 import Excel from 'exceljs';
+import { log } from 'handsontable/helpers';
 
 const AddChart: React.FC = () => {
   const [form, setForm] = useForm();
@@ -32,6 +33,7 @@ const AddChart: React.FC = () => {
     wrapperCol: { span: 14 },
   };
 
+  console.log(excelData);
   const onFinish = async (values: any) => {
     if (submitting) {
       return;
@@ -60,7 +62,7 @@ const AddChart: React.FC = () => {
     <div className="addChartAsync">
       <Row gutter={24}>
         <Col span={12}>
-          <Card title="智能分析">
+          <Card title="智能分析" style={{ width: '100%', height: '100%' }}>
             <Form
               form={form}
               name="validate_other"
@@ -143,20 +145,21 @@ const AddChart: React.FC = () => {
         </Col>
         <Col span={12}>
           <Card title="原始数据">
-            {
-              <div id="table_view">
+            <div id="table_view" style={{ width: '100%', height: '100%' }}>
+              {excelData.length > 0 ? (
                 <HotTable
                   data={excelData}
                   readOnly={true}
                   rowHeaders={true}
                   colHeaders={true}
-                  width="100vw"
-                  height="auto"
+                  width="100%"
+                  height="80vh"
                   licenseKey="non-commercial-and-evaluation" // 一定得加这个，handsontable是收费的，加了这个才能免费用
                 />
-              </div>
-            }
-            <Spin spinning={submitting} />
+              ) : (
+                <div>请上传excel文件</div>
+              )}
+            </div>
           </Card>
         </Col>
       </Row>

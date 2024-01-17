@@ -1,5 +1,6 @@
 package cn.nexura.nextbi.service.impl;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.extra.pinyin.PinyinUtil;
 import cn.hutool.json.JSONUtil;
 import cn.nexura.nextbi.common.ErrorCode;
@@ -24,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -128,19 +126,29 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
                 .genResult(genResult)
                 .genChart(genChart)
                 .chartId(chart.getId())
-                .chartData(getChartData(chart).getChartData())
+                .chartData(getChartData(chart))
                 .build();
     }
 
     @Override
-    public Chart getChartData(Chart chart) {
+    public String getChartData(Chart chart) {
         // 根据id查询数据库
-        List<Map<String, Object>> chartData = baseMapper.getChartDataByChartId(chart.getId());
+        List<Map<String, String>> chartData = baseMapper.getChartDataByChartId(chart.getId());
 
-        // 设置数据
-        chart.setChartData(JSONUtil.toJsonStr(chartData));
-        System.out.println(chart);
-        return chart;
+        List<Collection<String>> excelData = new ArrayList<>();
+
+        for (int i = 0; i < chartData.size(); i++) {
+            Map<String, String> chartDatum = chartData.get(i);
+            if (i == 0) {
+                Set<String> keys = chartDatum.keySet();
+                excelData.add(keys);
+            } else {
+                Collection<String> values = chartDatum.values();
+                excelData.add(values);
+            }
+        }
+
+        return JSONUtil.toJsonStr(excelData);
     }
 
     @Override

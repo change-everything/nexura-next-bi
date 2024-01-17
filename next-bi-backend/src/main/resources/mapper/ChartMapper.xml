@@ -26,11 +26,9 @@
     <update id="createTable">
         create table if not exists chart_${chartId}
         (
-            id bigint auto_increment comment 'id' primary key,
             <foreach collection="tableField" item="field" separator=",">
                 ${field} varchar(64) not null
             </foreach>
-
         ) comment '分析数据' collate = utf8mb4_unicode_ci;
     </update>
 

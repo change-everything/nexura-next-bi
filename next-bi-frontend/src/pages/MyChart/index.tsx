@@ -1,27 +1,11 @@
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  Divider,
-  Form,
-  Input,
-  List,
-  message,
-  Result,
-  Row,
-  Select,
-  Space,
-  Spin,
-  Upload,
-} from 'antd';
-import TextArea from 'antd/es/input/TextArea';
+import { Avatar, Card, List, message, Result, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { listChartByPageUsingPost } from '@/services/next-bi/chartController';
 import ReactECharts from 'echarts-for-react';
-import { getInitialState } from '@/app';
 import { useModel } from '@umijs/max';
 import Search from 'antd/es/input/Search';
+
+import { useNavigate } from 'react-router-dom';
 
 const MyChart: React.FC = () => {
   const initSearchParams = {
@@ -35,11 +19,13 @@ const MyChart: React.FC = () => {
     ...initSearchParams,
   });
 
+  const { Paragraph, Text } = Typography;
   const [chartList, setChartList] = useState<API.Chart[]>();
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState ?? {};
+  const route = useNavigate();
   const loadData = async () => {
     setLoading(true);
     try {
@@ -104,43 +90,57 @@ const MyChart: React.FC = () => {
         }}
         dataSource={chartList}
         renderItem={(item) => (
-          <List.Item key={item.id}>
-            <Card>
-              <List.Item.Meta
-                avatar={<Avatar src={currentUser?.userAvatar} />}
-                title={item.name}
-                description={'分析目标：' + item.goal}
-              />
-              <>
-                {item.status === 'succeed' && (
-                  <>
-                    <Card>{item.genResult}</Card>
+          <div
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              route({ pathname: `/detail_chart/${item.id}` });
+            }}
+          >
+            <Card style={{ height: '65vh' }}>
+              <List.Item key={item.id}>
+                <List.Item.Meta
+                  avatar={<Avatar src={currentUser?.userAvatar} />}
+                  title={item.name}
+                  description={'分析目标：' + item.goal}
+                />
+                <>
+                  {item.status === 'succeed' && (
+                    <>
+                      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+                        <Text
+                          style={item.genResult ? { width: '100%' } : undefined}
+                          ellipsis={item.genResult ? { tooltip: item.genResult } : false}
+                        >
+                          {item.genResult}
+                        </Text>
 
-                    <ReactECharts option={item.genChart && JSON.parse(item.genChart)} />
-                  </>
-                )}
-                {item.status === 'failed' && (
-                  <>
-                    <Result status="error" title="图表生成失败" subTitle={item.execMessage} />
-                  </>
-                )}
-                {item.status === 'wait' && (
-                  <>
-                    <Result
-                      status="warning"
-                      title="待生成"
-                      subTitle={item.execMessage ?? '当前任务繁忙，请耐心等待'}
-                    />
-                  </>
-                )}
-                {item.status === 'running' && (
-                  <>
-                    <Result status="info" title="图表生成中" subTitle={item.execMessage} />
-                  </>
-                )}
-              </>
+                        <ReactECharts option={item.genChart && JSON.parse(item.genChart)} />
+                      </Space>
+                    </>
+                  )}
+                  {item.status === 'failed' && (
+                    <>
+                      <Result status="error" title="图表生成失败" subTitle={item.execMessage} />
+                    </>
+                  )}
+                  {item.status === 'wait' && (
+                    <>
+                      <Result
+                        status="warning"
+                        title="待生成"
+                        subTitle={item.execMessage ?? '当前任务繁忙，请耐心等待'}
+                      />
+                    </>
+                  )}
+                  {item.status === 'running' && (
+                    <>
+                      <Result status="info" title="图表生成中" subTitle={item.execMessage} />
+                    </>
+                  )}
+                </>
+              </List.Item>
             </Card>
-          </List.Item>
+          </div>
         )}
       />
     </div>
