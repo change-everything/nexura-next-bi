@@ -15,19 +15,19 @@ const Footer: React.FC = () => {
         {
           key: 'next BI',
           title: 'next BI',
-          href: 'https://pro.ant.design',
+          href: 'https://github.com/change-everything/nexura-next-bi',
           blankTarget: true,
         },
         {
           key: 'github',
           title: <GithubOutlined />,
-          href: 'https://github.com/ant-design/ant-design-pro',
+          href: 'https://github.com/change-everything/nexura-next-bi',
           blankTarget: true,
         },
         {
           key: 'next BI',
           title: 'next BI',
-          href: 'https://ant.design',
+          href: 'https://github.com/change-everything/nexura-next-bi',
           blankTarget: true,
         },
       ]}
