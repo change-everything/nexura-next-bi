@@ -26,19 +26,26 @@ create table if not exists user
 ) comment '用户' collate = utf8mb4_unicode_ci;
 
 
-CREATE TABLE chart (
-   id BIGINT(20) NOT NULL COMMENT 'id',
-   name VARCHAR(255) COMMENT '名称',
-   goal VARCHAR(255) COMMENT '分析目标',
-   chart_data TEXT COMMENT '图表数据',
-   chart_type VARCHAR(255) COMMENT '图表类型',
-   gen_chart TEXT COMMENT '生成的图表数据',
-   gen_result TEXT COMMENT '生成的分析结论',
-   user_id BIGINT(20) COMMENT '创建用户 id',
-   create_time DATETIME COMMENT '创建时间',
-   update_time DATETIME COMMENT '更新时间',
-   is_delete INT(11) COMMENT '是否删除',
-   PRIMARY KEY (id)
-) COMMENT='图表表';
+create table chart
+(
+    id           bigint auto_increment comment 'id' primary key,
+    goal         text                                   null comment '分析目标',
+    chart_data   text                                   null comment '图表数据',
+    chart_type   varchar(128)                           null comment '图表类型',
+    gen_chart    text                                   null comment '生成的图表数据',
+    gen_result   text                                   null comment '生成的分析结论',
+    user_id      bigint                                 null comment '创建用户 id',
+    create_time  datetime     default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time  datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete    tinyint      default 0                 not null comment '是否删除',
+    name         varchar(255)                           null comment '名称',
+    status       varchar(128) default 'wait'            not null comment 'wait,running,succeed,failed',
+    exec_message text                                   null comment '执行信息'
+) comment '图表信息表' collate = utf8mb4_unicode_ci;
 
-INSERT INTO next_bi_db.user (id, user_account, user_password, union_id, mpOpen_id, user_name, user_avatar, user_profile, user_role, create_time, update_time, is_delete) VALUES (1740718129912344578, 'nexura', 'b0dd3697a192885d7c055db46155b26a', null, null, 'nexura官方', '//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/9eeb1800d9b78349b24682c3518ac4a3.png~tplv-uwbnlip3yd-webp.webp', null, 'admin', '2023-12-29 12:55:17', '2024-01-10 13:55:07', 0);
+
+create table chart_1747554550780358657
+(
+    日期 varchar(64) null,
+    人数 varchar(64) null
+);
