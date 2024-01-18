@@ -21,9 +21,10 @@ import { HotTable } from '@handsontable/react';
 import 'handsontable/dist/handsontable.full.min.css';
 import { genChartByAiUsingPost, getChartByIdUsingGet } from '@/services/next-bi/chartController';
 import { useParams } from 'react-router-dom';
+import { useForm } from 'antd/es/form/Form';
 
 const AddChart: React.FC = () => {
-  const [chart, setChart] = useState<API.BiResponse>();
+  const [chart] = useForm<API.Chart>();
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [option, setOption] = useState<any>();
   const [excelData, setExcelData] = useState([]);
@@ -42,7 +43,7 @@ const AddChart: React.FC = () => {
     }
     setSubmitting(true);
     setOption(undefined);
-    setChart(undefined);
+    chart.resetFields();
     try {
       const res = await getChartByIdUsingGet({ id: chartId });
       console.log(res);
@@ -59,7 +60,7 @@ const AddChart: React.FC = () => {
         if (!chartOption) {
           throw new Error('图表代码解析错误');
         } else {
-          setChart(res.data);
+          chart.setFieldsValue(res.data);
           setOption(chartOption);
         }
       }
@@ -79,7 +80,7 @@ const AddChart: React.FC = () => {
     }
     setSubmitting(true);
     setOption(undefined);
-    setChart(undefined);
+    chart.resetFields();
     const params = {
       ...values,
       file: undefined,
@@ -95,7 +96,7 @@ const AddChart: React.FC = () => {
         if (!chartOption) {
           throw new Error('图表代码解析错误');
         } else {
-          setChart(res.data);
+          chart.setFieldsValue(res.data);
           setOption(chartOption);
         }
       }
@@ -110,7 +111,7 @@ const AddChart: React.FC = () => {
       <Row gutter={24}>
         <Col span={12}>
           <Card title="智能分析">
-            <Form name="validate_other" {...formItemLayout} onFinish={onFinish} initialValues={{}}>
+            <Form name="validate_other" {...formItemLayout} onFinish={onFinish} form={chart}>
               <Form.Item
                 name="goal"
                 label="分析目标"
@@ -203,7 +204,7 @@ const AddChart: React.FC = () => {
         </Col>
         <Col span={12}>
           <Card title="分析结论">
-            {chart?.genResult ?? <div>请先在左侧提交数据</div>}
+            {chart.getFieldValue('genResult') ?? <div>请先在左侧提交数据</div>}
             <Spin spinning={submitting} />
           </Card>
           <Divider />
