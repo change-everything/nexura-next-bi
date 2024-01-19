@@ -1,5 +1,4 @@
 # 公共配置文件
-
 spring:
   application:
     name: next-bi-backend
@@ -13,7 +12,7 @@ spring:
   # session 配置
   session:
     # todo 取消注释开启分布式 session（须先配置 Redis）
-    # store-type: redis
+    store-type: redis
     # 30 天过期
     timeout: 2592000
   # 数据库配置
@@ -30,6 +29,7 @@ spring:
     host: 120.46.207.211
     port: 6379
     timeout: 5000
+    password:
   rabbitmq:
     port: 5672
     host: 120.46.207.211
@@ -96,5 +96,5 @@ cos:
 
 yuapi:
   client:
-    access-key: clel2iqzfbofpgt1s4nbhz7a44zc86ry
-    secret-key: gg2yuq9jp9lkp0n84qbichuslis6x7jl
+    access-key: x4efjrn1gzl70iubppr46ht026146glm
+    secret-key: ox6902pv2jh8ex3fd7bch4kg7n8ug7w3

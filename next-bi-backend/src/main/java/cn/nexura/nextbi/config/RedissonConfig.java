@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Configuration;
  * @author PeiYP
  * @since 2024年01月12日 15:33
  */
-//@Configuration
-//@ConfigurationProperties(prefix = "spring.redis")
-//@Data
+@Configuration
+@ConfigurationProperties(prefix = "spring.redis")
+@Data
 public class RedissonConfig {
 
     private Integer database;

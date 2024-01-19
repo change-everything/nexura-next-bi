@@ -193,8 +193,10 @@ const AddChart: React.FC = () => {
                   readOnly={true}
                   rowHeaders={true}
                   colHeaders={true}
-                  width="100vw"
-                  height="auto"
+                  height={500} //默认表格高度
+                  stretchH={'all'} //自适应
+                  contextMenu={false} //右键菜单
+                  columnSorting={true} //允许排序
                   licenseKey="non-commercial-and-evaluation" // 一定得加这个，handsontable是收费的，加了这个才能免费用
                 />
               </div>

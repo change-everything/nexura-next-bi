@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  * @author PeiYP
  * @since 2024年01月12日 15:49
  */
-//@Service
+@Service
 public class RedisLimiterManager {
 
     @Resource
@@ -26,7 +26,7 @@ public class RedisLimiterManager {
      */
     public void doRateLimit(String key) {
         RRateLimiter rateLimiter = redissonClient.getRateLimiter(key);
-        rateLimiter.trySetRate(RateType.OVERALL, 5, 1, RateIntervalUnit.SECONDS);
+        rateLimiter.trySetRate(RateType.OVERALL, 2, 1, RateIntervalUnit.SECONDS);
         boolean canOption = rateLimiter.tryAcquire(1);
         if (!canOption) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);

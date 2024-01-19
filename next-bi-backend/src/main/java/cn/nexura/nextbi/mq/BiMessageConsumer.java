@@ -79,7 +79,13 @@ public class BiMessageConsumer {
             return;
         }
 
-        String result = aiManager.doChat(biModelId, userInput.toString());
+        String result = null;
+        try {
+            result = aiManager.doChat(biModelId, userInput.toString());
+        } catch (Exception e) {
+            channel.basicNack(deliverTag, false, false);
+            return;
+        }
         String[] splitRes = result.split("【【【【【");
         if (splitRes.length < 3) {
             channel.basicNack(deliverTag, false, false);

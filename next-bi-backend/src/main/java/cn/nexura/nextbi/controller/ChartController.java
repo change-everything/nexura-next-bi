@@ -6,35 +6,27 @@ import cn.nexura.nextbi.common.BaseResponse;
 import cn.nexura.nextbi.common.DeleteRequest;
 import cn.nexura.nextbi.common.ErrorCode;
 import cn.nexura.nextbi.common.ResultUtils;
-import cn.nexura.nextbi.constant.FileConstant;
 import cn.nexura.nextbi.constant.UserConstant;
 import cn.nexura.nextbi.exception.BusinessException;
 import cn.nexura.nextbi.exception.ThrowUtils;
-import cn.nexura.nextbi.manager.AiManager;
 import cn.nexura.nextbi.manager.RedisLimiterManager;
 import cn.nexura.nextbi.model.dto.chart.*;
-import cn.nexura.nextbi.model.dto.file.UploadFileRequest;
 import cn.nexura.nextbi.model.entity.Chart;
 import cn.nexura.nextbi.model.entity.User;
-import cn.nexura.nextbi.model.enums.FileUploadBizEnum;
 import cn.nexura.nextbi.model.vo.BiResponse;
 import cn.nexura.nextbi.service.ChartService;
 import cn.nexura.nextbi.service.UserService;
-import cn.nexura.nextbi.utils.ExcelUtils;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,8 +46,9 @@ public class ChartController {
     private UserService userService;
 
 
-//    @Resource
-//    private RedisLimiterManager redisLimiterManager;
+    @Resource
+    private RedisLimiterManager redisLimiterManager;
+
 
     private final static Gson GSON = new Gson();
 
@@ -97,7 +90,7 @@ public class ChartController {
 
 
         // 限流操作
-//        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
+        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
 
         BiResponse biResponse = chartService.doGenChart(multipartFile, loginUser, goal, name, chartType);
 
@@ -141,7 +134,7 @@ public class ChartController {
 
 
         // 限流操作
-//        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
+        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
 
         BiResponse biResponse = chartService.doGenChartAsync(multipartFile, loginUser, goal, name, chartType);
 
@@ -247,6 +240,7 @@ public class ChartController {
      * @return
      */
     @PostMapping("/list/page")
+    @Cacheable(value = "charts", key = "'chartPage'")
     public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest,
             HttpServletRequest request) {
         long current = chartQueryRequest.getCurrent();
