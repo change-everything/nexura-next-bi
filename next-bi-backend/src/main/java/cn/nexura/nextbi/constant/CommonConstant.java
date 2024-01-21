@@ -19,6 +19,6 @@ public interface CommonConstant {
     /**
      * AI key
      */
-    long biModelId = 1709156902984093697L;
+    long BI_MODEL_ID = 1709156902984093697L;
     
 }

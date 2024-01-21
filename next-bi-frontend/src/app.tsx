@@ -1,18 +1,18 @@
 import Footer from '@/components/Footer';
 import { Question } from '@/components/RightContent';
 import { getLoginUserUsingGet } from '@/services/next-bi/userController';
-import { LinkOutlined } from '@ant-design/icons';
-import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
-import { history, Link } from '@umijs/max';
+import { history } from '@umijs/max';
 import { AvatarDropdown, AvatarName } from './components/RightContent/AvatarDropdown';
+import SseComponent from "@/components/SseComponent";
 import { errorConfig } from './requestErrorConfig';
-const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
+
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
- * */
+ *
+ */
 export async function getInitialState(): Promise<{
   currentUser?: API.LoginUserVO;
 }> {
@@ -78,14 +78,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         width: '331px',
       },
     ],
-    links: false
-      ? [
-          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-        ]
-      : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
@@ -95,17 +87,18 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       return (
         <>
           {children}
-          <SettingDrawer
-            disableUrlParams
-            enableDarkTheme
-            settings={initialState?.settings}
-            onSettingChange={(settings) => {
-              setInitialState((preInitialState) => ({
-                ...preInitialState,
-                settings,
-              }));
-            }}
-          />
+          <SseComponent/>
+          {/*<SettingDrawer*/}
+          {/*  disableUrlParams*/}
+          {/*  enableDarkTheme*/}
+          {/*  settings={initialState?.settings}*/}
+          {/*  onSettingChange={(settings) => {*/}
+          {/*    setInitialState((preInitialState) => ({*/}
+          {/*      ...preInitialState,*/}
+          {/*      settings,*/}
+          {/*    }));*/}
+          {/*  }}*/}
+          {/*/>*/}
         </>
       );
     },

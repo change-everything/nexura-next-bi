@@ -39,7 +39,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 盐值，混淆密码
      */
-    private static final String SALT = "nexura";
+    private static final String SALT = "yupi";
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {

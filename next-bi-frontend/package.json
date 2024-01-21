@@ -67,6 +67,8 @@
     "react-dom": "^18.2.0",
     "react-helmet-async": "^1.3.0",
     "react-router-dom": "^6.21.2",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -80,6 +82,7 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/react-helmet": "^6.1.6",
+    "@types/stompjs": "^2.3.9",
     "@umijs/fabric": "^2.14.1",
     "@umijs/lint": "^4.0.52",
     "@umijs/max": "^4.0.52",

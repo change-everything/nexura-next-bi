@@ -13,11 +13,16 @@ import cn.nexura.nextbi.model.entity.User;
 import cn.nexura.nextbi.model.vo.BiResponse;
 import cn.nexura.nextbi.mq.BiMessageProducer;
 import cn.nexura.nextbi.service.ChartService;
+import cn.nexura.nextbi.sse.service.SseService;
 import cn.nexura.nextbi.utils.ExcelUtils;
 import cn.nexura.nextbi.utils.SqlUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.script.BucketAggregationSelectorScript;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -148,6 +153,19 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
     @Override
     public BiResponse doGenChartAsync(MultipartFile multipartFile, User loginUser, String goal, String name, String chartType) {
+
+        Long userId = loginUser.getId();
+
+        Chart runningChart = this.getOne(Wrappers.lambdaQuery(Chart.class)
+                .eq(Chart::getUserId, userId)
+                .eq(Chart::getStatus, "running")
+                .or().eq(Chart::getStatus, "wait"));
+
+        if (runningChart != null) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前有进行中的任务，请稍后再试");
+        }
+
+
         // 用户输入
         StringBuilder userInput = new StringBuilder();
         userInput.append("Analysis goal:").append("\n");
@@ -169,13 +187,14 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         Chart chart = new Chart();
         chart.setName(name);
         chart.setGoal(userGoal);
-        chart.setChartData(data);
+//        chart.setChartData(data);
         chart.setChartType(chartType);
         chart.setStatus("wait");
-        chart.setUserId(loginUser.getId());
+        chart.setUserId(userId);
         boolean save = this.save(chart);
         ThrowUtils.throwIf(!save, ErrorCode.SYSTEM_ERROR, "信息保存失败");
 
+        // 分表
         sharding(data, chart.getId());
 
 

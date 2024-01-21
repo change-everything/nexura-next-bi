@@ -47,7 +47,7 @@ const AddChart: React.FC = () => {
       const res = await genChartAsyncByAiUsingPost(params, {}, values.file.file.originFileObj);
       console.log(res);
       if (!res?.data) {
-        message.error('生成失败');
+        message.error('生成失败，' + res.message);
       } else {
         message.success('提交图表成功，稍后请在我的图表中查看');
         form.resetFields();

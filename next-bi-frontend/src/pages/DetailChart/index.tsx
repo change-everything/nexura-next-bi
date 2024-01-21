@@ -50,7 +50,7 @@ const AddChart: React.FC = () => {
       if (!res?.data) {
         message.error('查询失败');
       } else {
-        const chartOption = JSON.parse(res.data.genChart ?? '');
+        const chartOption = JSON.parse(res.data.genChart ?? '{}');
 
         // 遍历工作表中的所有行（包括空行）
         const chartData: string = res?.data?.chartData;
@@ -92,7 +92,7 @@ const AddChart: React.FC = () => {
         message.error('生成失败');
       } else {
         message.success('生成成功');
-        const chartOption = JSON.parse(res.data.genChart ?? '');
+        const chartOption = JSON.parse(res.data.genChart ?? '{}');
         if (!chartOption) {
           throw new Error('图表代码解析错误');
         } else {
@@ -206,12 +206,12 @@ const AddChart: React.FC = () => {
         </Col>
         <Col span={12}>
           <Card title="分析结论">
-            {chart.getFieldValue('genResult') ?? <div>请先在左侧提交数据</div>}
+            {chart.getFieldValue('genResult') ?? <div>您的图表暂未分析成功</div>}
             <Spin spinning={submitting} />
           </Card>
           <Divider />
           <Card title="可视化图表">
-            {option ? <ReactECharts option={option} /> : <div>请先在左侧提交数据</div>}
+            {option ? <ReactECharts option={option} /> : <div>您的图表暂未分析成功</div>}
             <Spin spinning={submitting} />
           </Card>
         </Col>

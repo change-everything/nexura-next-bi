@@ -16,11 +16,15 @@ import cn.nexura.nextbi.model.entity.User;
 import cn.nexura.nextbi.model.vo.BiResponse;
 import cn.nexura.nextbi.service.ChartService;
 import cn.nexura.nextbi.service.UserService;
+import cn.nexura.nextbi.sse.service.SseService;
+import cn.nexura.nextbi.sse.service.SseServiceImpl;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +33,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 帖子接口
@@ -51,6 +56,27 @@ public class ChartController {
 
 
     private final static Gson GSON = new Gson();
+
+    @Resource
+    private SseService sseService;
+
+
+    @PostMapping("/test")
+    public BaseResponse<String> testConn(@RequestBody ChartQueryRequest queryRequest) {
+
+        System.out.println(queryRequest);
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(3000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            sseService.sendMessageToOneClient("1740718129912344578", "消息来咯！！！");
+        });
+
+        return ResultUtils.success("123");
+    }
 
 
     /**
@@ -240,7 +266,7 @@ public class ChartController {
      * @return
      */
     @PostMapping("/list/page")
-    @Cacheable(value = "charts", key = "'chartPage'")
+//    @Cacheable(value = "charts", key = "'chartPage'")
     public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest,
             HttpServletRequest request) {
         long current = chartQueryRequest.getCurrent();

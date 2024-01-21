@@ -172,3 +172,16 @@ export async function updateChartUsingPost(
     ...(options || {}),
   });
 }
+
+
+export async function testUsingPost(
+    body: API.ChartQueryRequest,
+) {
+  return request<any>('/api/chart/test', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body
+  });
+}

@@ -3,6 +3,7 @@ export default [
   { path: '/', redirect: '/add_chart_async' },
   // { path: '/add_chart', name: '智能分析', icon: 'areaChart', component: './AddChart' },
   { path: '/detail_chart/:id', icon: 'areaChart', component: './DetailChart' },
+  // { path: '/testSse', name: '123', icon: 'areaChart', component: '@/components/SseComponent' },
   {
     path: '/add_chart_async',
     name: '智能分析',
