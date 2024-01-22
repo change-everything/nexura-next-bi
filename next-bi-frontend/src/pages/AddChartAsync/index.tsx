@@ -2,7 +2,7 @@ import {
   genChartAsyncByAiUsingPost,
   genChartByAiUsingPost,
 } from '@/services/next-bi/chartController';
-import { UploadOutlined } from '@ant-design/icons';
+import { ThunderboltFilled, UploadOutlined } from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -51,6 +51,7 @@ const AddChart: React.FC = () => {
       } else {
         message.success('提交图表成功，稍后请在我的图表中查看');
         form.resetFields();
+        setExcelData([]);
       }
     } catch (e: any) {
       message.error('生成失败, ' + e.message);
@@ -133,7 +134,7 @@ const AddChart: React.FC = () => {
                     loading={submitting}
                     disabled={submitting}
                   >
-                    提交
+                    提交 (<ThunderboltFilled /> 5积分)
                   </Button>
                   <Button htmlType="reset" loading={submitting} disabled={submitting}>
                     重置

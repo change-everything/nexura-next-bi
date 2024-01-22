@@ -19,9 +19,11 @@ import cn.nexura.nextbi.utils.SqlUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.script.BucketAggregationSelectorScript;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +49,9 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
     @Resource
     private BiMessageProducer messageProducer;
+
+    @Value("${nexura.bi.integral}")
+    private Integer integral;
 
 
 
@@ -155,13 +160,17 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
     public BiResponse doGenChartAsync(MultipartFile multipartFile, User loginUser, String goal, String name, String chartType) {
 
         Long userId = loginUser.getId();
+        Integer userIntegral = loginUser.getIntegral();
+        if (userIntegral < integral) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "您的积分不足");
+        }
 
-        Chart runningChart = this.getOne(Wrappers.lambdaQuery(Chart.class)
+        List<Chart> runningCharts = this.list(Wrappers.lambdaQuery(Chart.class)
                 .eq(Chart::getUserId, userId)
                 .eq(Chart::getStatus, "running")
                 .or().eq(Chart::getStatus, "wait"));
 
-        if (runningChart != null) {
+        if (runningCharts.size() > 0) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前有进行中的任务，请稍后再试");
         }
 

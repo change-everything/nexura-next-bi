@@ -40,6 +40,12 @@ public class User implements Serializable {
     private String userName;
 
     /**
+     * 用户积分
+     */
+    @TableField(value = "integral")
+    private Integer integral;
+
+    /**
      * 用户头像
      */
     @TableField(value = "user_avatar")

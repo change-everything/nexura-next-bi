@@ -75,6 +75,7 @@ public class BiMessageConsumer {
                 result = aiManager.doChat(BI_MODEL_ID, userInput.toString());
             } catch (Exception e) {
                 channel.basicNack(deliverTag, false, false);
+                handleChartUpdateError(chartId, "AI生成错误");
                 return;
             }
             String[] splitRes = result.split("【【【【【");
