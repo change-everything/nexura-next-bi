@@ -29,7 +29,7 @@ spring:
     host: 120.46.207.211
     port: 6379
     timeout: 5000
-    password:
+    password: tjdxdykw.123
   rabbitmq:
     port: 5672
     host: 120.46.207.211
@@ -98,3 +98,7 @@ yuapi:
   client:
     access-key: x4efjrn1gzl70iubppr46ht026146glm
     secret-key: ox6902pv2jh8ex3fd7bch4kg7n8ug7w3
+
+nexura:
+  bi:
+    integral: 5
