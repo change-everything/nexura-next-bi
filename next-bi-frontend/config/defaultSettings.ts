@@ -7,9 +7,9 @@ const Settings: ProLayoutProps & {
   pwa?: boolean;
   logo?: string;
 } = {
-  navTheme: 'realDark',
+  navTheme: 'light',
   // 拂晓蓝
-  colorPrimary: '#2F54EB',
+  colorPrimary: '#13C2C2',
   layout: 'side',
   contentWidth: 'Fluid',
   fixedHeader: false,
@@ -17,7 +17,6 @@ const Settings: ProLayoutProps & {
   colorWeak: false,
   title: 'next BI',
   pwa: true,
-  logo: 'public/logo.svg',
   iconfontUrl: '',
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式

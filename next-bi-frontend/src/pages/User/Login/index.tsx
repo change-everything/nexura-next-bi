@@ -8,13 +8,13 @@ import {
   WeiboCircleOutlined,
 } from '@ant-design/icons';
 import { LoginForm, ProFormText } from '@ant-design/pro-components';
-import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { Helmet, history, useModel } from '@umijs/max';
 import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Link } from 'umi';
 import Settings from '../../../../config/defaultSettings';
+import { useEmotionCss } from '@ant-design/use-emotion-css';
 
 const ActionIcons = () => {
   const langClassName = useEmotionCss(({ token }) => {
@@ -38,20 +38,6 @@ const ActionIcons = () => {
     </>
   );
 };
-const LoginMessage: React.FC<{
-  content: string;
-}> = ({ content }) => {
-  return (
-    <Alert
-      style={{
-        marginBottom: 24,
-      }}
-      message={content}
-      type="error"
-      showIcon
-    />
-  );
-};
 const Login: React.FC = () => {
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
@@ -71,12 +57,13 @@ const Login: React.FC = () => {
     const userInfo = await getLoginUserUsingGet();
     if (userInfo) {
       flushSync(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
+        setInitialState({
+          ...initialState,
+          currentUser: userInfo.data,
+        });
       });
     }
+    console.log(userInfo);
   };
   const handleSubmit = async (values: API.UserLoginRequest) => {
     try {
@@ -100,7 +87,7 @@ const Login: React.FC = () => {
       message.error(defaultLoginFailureMessage);
     }
   };
-  const { status, type: loginType } = userLoginState;
+
   return (
     <div className={containerClassName}>
       <Helmet>

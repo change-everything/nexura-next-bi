@@ -2,9 +2,6 @@
 spring:
   application:
     name: next-bi-backend
-  # 默认 dev 环境
-  profiles:
-    active: local
   # 支持 swagger3
   mvc:
     pathmatch:
@@ -29,7 +26,7 @@ spring:
     host: 120.46.207.211
     port: 6379
     timeout: 5000
-    password:
+    password: tjdxdykw.123
   rabbitmq:
     port: 5672
     host: 120.46.207.211
