@@ -3,8 +3,7 @@ package cn.nexura.nextbi.mq;
 import cn.hutool.core.util.StrUtil;
 import cn.nexura.nextbi.common.ErrorCode;
 import cn.nexura.nextbi.exception.BusinessException;
-import cn.nexura.nextbi.manager.AiManager;
-import cn.nexura.nextbi.mapper.ChartMapper;
+import cn.nexura.nextbi.manager.YuCongMingManager;
 import cn.nexura.nextbi.model.entity.Chart;
 import cn.nexura.nextbi.service.ChartService;
 import cn.nexura.nextbi.sse.service.SseService;
@@ -15,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -35,7 +33,7 @@ public class BiMessageConsumer {
     private ChartService chartService;
 
     @Resource
-    private AiManager aiManager;
+    private YuCongMingManager aiManager;
 
     @Resource
     private SseService sseService;
@@ -48,12 +46,13 @@ public class BiMessageConsumer {
             Chart chart = validMessage(message, channel, deliverTag);
 
             Long chartId = chart.getId();
+            String goal = chart.getGoal();
 
             // 用户输入
             StringBuilder userInput = new StringBuilder();
             userInput.append("Analysis goal:").append("\n");
 
-            userInput.append(chart.getGoal()).append("\n");
+            userInput.append(goal).append("\n");
 
             // 2024/1/16 应该去其他表查询
             String chartData = chartService.getChartData(chart);
@@ -61,6 +60,7 @@ public class BiMessageConsumer {
             // 修改任务为执行中
             Chart updateChart = new Chart();
             updateChart.setId(chartId);
+            updateChart.setGoal(goal.split("\n")[0]);
             updateChart.setStatus("running");
             boolean updateRow = chartService.updateById(updateChart);
             if (!updateRow) {

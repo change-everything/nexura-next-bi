@@ -1,28 +1,11 @@
-import {
-  genChartAsyncByAiUsingPost,
-  genChartByAiUsingPost,
-} from '@/services/next-bi/chartController';
+import { genChartByAiAsyncUsingPost } from '@/services/next-bi/chartController';
 import { ThunderboltFilled, UploadOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Col,
-  Divider,
-  Form,
-  Input,
-  message,
-  Row,
-  Select,
-  Space,
-  Spin,
-  Upload,
-} from 'antd';
-import TextArea from 'antd/es/input/TextArea';
-import React, { useState } from 'react';
-import { useForm } from 'antd/es/form/Form';
 import { HotTable } from '@handsontable/react';
+import { Button, Card, Col, Form, Input, message, Row, Select, Space, Upload } from 'antd';
+import { useForm } from 'antd/es/form/Form';
+import TextArea from 'antd/es/input/TextArea';
 import Excel from 'exceljs';
-import { log } from 'handsontable/helpers';
+import React, { useState } from 'react';
 
 const AddChart: React.FC = () => {
   const [form, setForm] = useForm();
@@ -44,7 +27,7 @@ const AddChart: React.FC = () => {
       file: undefined,
     };
     try {
-      const res = await genChartAsyncByAiUsingPost(params, {}, values.file.file.originFileObj);
+      const res = await genChartByAiAsyncUsingPost(params, {});
       console.log(res);
       if (!res?.data) {
         message.error('生成失败，' + res.message);
@@ -95,6 +78,13 @@ const AddChart: React.FC = () => {
                     { value: '堆叠图', label: '堆叠图' },
                     { value: '饼图', label: '饼图' },
                     { value: '雷达图', label: '雷达图' },
+                    { value: '散点图', label: '散点图' },
+                    { value: '盒须图', label: '盒须图' },
+                    { value: '关系图', label: '关系图' },
+                    { value: '漏斗图', label: '漏斗图' },
+                    { value: '树图', label: '树图' },
+                    { value: 'K线图', label: 'K线图' },
+                    { value: '旭日图', label: '旭日图' },
                   ]}
                 ></Select>
               </Form.Item>

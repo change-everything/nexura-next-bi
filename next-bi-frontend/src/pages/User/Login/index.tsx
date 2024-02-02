@@ -8,13 +8,13 @@ import {
   WeiboCircleOutlined,
 } from '@ant-design/icons';
 import { LoginForm, ProFormText } from '@ant-design/pro-components';
+import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { Helmet, history, useModel } from '@umijs/max';
-import { Alert, message, Tabs } from 'antd';
+import { message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Link } from 'umi';
 import Settings from '../../../../config/defaultSettings';
-import { useEmotionCss } from '@ant-design/use-emotion-css';
 
 const ActionIcons = () => {
   const langClassName = useEmotionCss(({ token }) => {
@@ -106,7 +106,7 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
+          logo={<img alt="logo" src="/logo.png" />}
           title="next BI"
           subTitle={'next BI 是新一代智能BI工具 做您专属的数据分析师'}
           onFinish={async (values) => {

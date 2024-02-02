@@ -23,6 +23,9 @@ public interface ChartMapper extends BaseMapper<Chart> {
     boolean insertDataBatch(@Param("tableData") List<String[]> tableData, @Param("chartId") Long chartId);
 
     List<Map<String, String>> getChartDataByChartId(@Param("chartId") Long chartId);
+
+
+    boolean dropTableByChartId(@Param("chartId") Long chartId);
 }
 
 

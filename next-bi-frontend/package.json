@@ -54,6 +54,7 @@
     "@umijs/route-utils": "^2.2.2",
     "antd": "^5.2.2",
     "classnames": "^2.3.2",
+    "echarts": "^5.4.3",
     "echarts-for-react": "^3.0.2",
     "exceljs": "^4.4.0",
     "handsontable": "^14.0.0",

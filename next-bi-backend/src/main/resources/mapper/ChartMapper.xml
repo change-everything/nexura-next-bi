@@ -31,6 +31,9 @@
             </foreach>
         ) comment '分析数据' collate = utf8mb4_unicode_ci;
     </update>
+    <delete id="dropTableByChartId">
+        drop table chart_${chartId};
+    </delete>
 
 
     <select id="getChartDataByChartId" resultType="java.util.Map">

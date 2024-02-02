@@ -3,6 +3,7 @@ package cn.nexura.nextbi.model.dto.chart;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 文件上传请求
@@ -11,6 +12,11 @@ import java.io.Serializable;
  */
 @Data
 public class GenChartByAiRequest implements Serializable {
+
+    /**
+     * id
+     */
+    private Long id;
 
     /**
      * 分析目标
@@ -25,12 +31,17 @@ public class GenChartByAiRequest implements Serializable {
     /**
      * 图表数据
      */
-    private String chartData;
+    private List<List<String>> chartData;
 
     /**
      * 图表类型
      */
     private String chartType;
+
+    /**
+     * 第一次分析结果
+     */
+    private String genResult;
 
     private static final long serialVersionUID = 1L;
 }

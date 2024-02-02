@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Service
 @Slf4j
-public class AiManager {
+public class YuCongMingManager {
 
     @Resource
     private YuCongMingClient yuCongMingClient;

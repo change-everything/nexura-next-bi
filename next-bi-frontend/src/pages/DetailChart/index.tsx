@@ -1,4 +1,9 @@
+import {
+  getChartByIdUsingGet,
+  reGenChartByAiAsyncUsingPost,
+} from '@/services/next-bi/chartController';
 import { UploadOutlined } from '@ant-design/icons';
+import { HotTable } from '@handsontable/react';
 import {
   Button,
   Card,
@@ -13,15 +18,13 @@ import {
   Spin,
   Upload,
 } from 'antd';
+import { useForm } from 'antd/es/form/Form';
 import TextArea from 'antd/es/input/TextArea';
-import React, { useEffect, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import Excel from 'exceljs';
-import { HotTable } from '@handsontable/react';
 import 'handsontable/dist/handsontable.full.min.css';
-import { genChartByAiUsingPost, getChartByIdUsingGet } from '@/services/next-bi/chartController';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useForm } from 'antd/es/form/Form';
 
 const AddChart: React.FC = () => {
   const [chart] = useForm<API.Chart>();
@@ -79,26 +82,19 @@ const AddChart: React.FC = () => {
       return;
     }
     setSubmitting(true);
-    setOption(undefined);
-    chart.resetFields();
     const params = {
       ...values,
-      file: undefined,
+      chartData: excelData,
+      id: chartId,
+      genResult: chart.getFieldValue('genResult'),
     };
     try {
-      const res = await genChartByAiUsingPost(params, {}, values.file.file.originFileObj);
+      const res = await reGenChartByAiAsyncUsingPost(params, {});
       console.log(res);
       if (!res?.data) {
-        message.error('生成失败');
+        message.error('生成失败, ' + res.message);
       } else {
-        message.success('生成成功');
-        const chartOption = JSON.parse(res.data.genChart ?? '{}');
-        if (!chartOption) {
-          throw new Error('图表代码解析错误');
-        } else {
-          chart.setFieldsValue(res.data);
-          setOption(chartOption);
-        }
+        message.success('提交图表成功，稍后请在我的图表中查看');
       }
     } catch (e: any) {
       message.error('生成失败, ' + e.message);
@@ -136,6 +132,13 @@ const AddChart: React.FC = () => {
                     { value: '堆叠图', label: '堆叠图' },
                     { value: '饼图', label: '饼图' },
                     { value: '雷达图', label: '雷达图' },
+                    { value: '散点图', label: '散点图' },
+                    { value: '盒须图', label: '盒须图' },
+                    { value: '关系图', label: '关系图' },
+                    { value: '漏斗图', label: '漏斗图' },
+                    { value: '树图', label: '树图' },
+                    { value: 'K线图', label: 'K线图' },
+                    { value: '旭日图', label: '旭日图' },
                   ]}
                 ></Select>
               </Form.Item>

@@ -1,11 +1,12 @@
 package cn.nexura.nextbi.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import cn.nexura.nextbi.common.ErrorCode;
 import cn.nexura.nextbi.constant.CommonConstant;
 import cn.nexura.nextbi.exception.BusinessException;
 import cn.nexura.nextbi.exception.ThrowUtils;
-import cn.nexura.nextbi.manager.AiManager;
+import cn.nexura.nextbi.manager.YuCongMingManager;
 import cn.nexura.nextbi.mapper.ChartMapper;
 import cn.nexura.nextbi.model.dto.chart.ChartQueryRequest;
 import cn.nexura.nextbi.model.entity.Chart;
@@ -13,18 +14,13 @@ import cn.nexura.nextbi.model.entity.User;
 import cn.nexura.nextbi.model.vo.BiResponse;
 import cn.nexura.nextbi.mq.BiMessageProducer;
 import cn.nexura.nextbi.service.ChartService;
-import cn.nexura.nextbi.sse.service.SseService;
 import cn.nexura.nextbi.utils.ExcelUtils;
 import cn.nexura.nextbi.utils.SqlUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.script.BucketAggregationSelectorScript;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,7 +38,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
 
     @Resource
-    private AiManager aiManager;
+    private YuCongMingManager aiManager;
 
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
@@ -157,7 +153,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
     }
 
     @Override
-    public BiResponse doGenChartAsync(MultipartFile multipartFile, User loginUser, String goal, String name, String chartType) {
+    public BiResponse doGenChartAsync(MultipartFile multipartFile, User loginUser, String goal, String name, String chartType, Long id, String genResult) {
 
         Long userId = loginUser.getId();
         Integer userIntegral = loginUser.getIntegral();
@@ -176,36 +172,47 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
 
         // 用户输入
-        StringBuilder userInput = new StringBuilder();
-        userInput.append("Analysis goal:").append("\n");
 
         String userGoal = goal;
-        if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isNotBlank(chartType)) {
+        if (StrUtil.isNotBlank(genResult)) {
+            userGoal += "\n请基于以下结论继续优化结果:\n" + genResult;
+        }
+        if (StrUtil.isNotBlank(chartType)) {
             userGoal += ",请使用" + chartType;
+        } else {
+            userGoal += ",请使用echarts中最合适的图";
         }
 
-        userInput.append(userGoal).append("\n");
+        String data = "";
 
         // 获得数据
-        String data = ExcelUtils.excelToCsv(multipartFile);
-
-
-        userInput.append("Row data:").append("\n").append(data).append("\n");
+        if (multipartFile != null) {
+            data = ExcelUtils.excelToCsv(multipartFile);
+            if (id != 0L) {
+                baseMapper.dropTableByChartId(id);
+            }
+        }
 
         // 保存信息
         Chart chart = new Chart();
         chart.setName(name);
         chart.setGoal(userGoal);
-//        chart.setChartData(data);
         chart.setChartType(chartType);
         chart.setStatus("wait");
         chart.setUserId(userId);
-        boolean save = this.save(chart);
-        ThrowUtils.throwIf(!save, ErrorCode.SYSTEM_ERROR, "信息保存失败");
+        boolean b = false;
+        if (id != 0L) {
+            chart.setId(id);
+            chart.setExecMessage("重新生成中...");
+            b = this.updateById(chart);
+        } else {
+            b = this.save(chart);
+            // 分表
+            sharding(data, chart.getId());
+        }
 
-        // 分表
-        sharding(data, chart.getId());
 
+        ThrowUtils.throwIf(!b, ErrorCode.SYSTEM_ERROR, "信息保存失败");
 
         messageProducer.sendMessage(chart.getId().toString());
 

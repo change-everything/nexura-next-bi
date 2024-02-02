@@ -88,9 +88,10 @@ export async function genChartByAiUsingPost(
   });
 }
 
-export async function genChartAsyncByAiUsingPost(
+/** genChartByAiAsync POST /api/chart/genAsync */
+export async function genChartByAiAsyncUsingPost(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.genChartByAiUsingPOSTParams,
+  params: API.genChartByAiAsyncUsingPOSTParams,
   body: {},
   file?: File,
   options?: { [key: string]: any },
@@ -158,6 +159,36 @@ export async function listChartByPageUsingPost(
   });
 }
 
+/** reGenChartByAiAsync POST /api/chart/reGenAsync */
+export async function reGenChartByAiAsyncUsingPost(
+  body: API.GenChartByAiRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBiResponse_>('/api/chart/reGenAsync', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** testConn POST /api/chart/test */
+export async function testConnUsingPost(
+  body: API.ChartQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseString_>('/api/chart/test', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** updateChart POST /api/chart/update */
 export async function updateChartUsingPost(
   body: API.ChartUpdateRequest,
@@ -170,18 +201,5 @@ export async function updateChartUsingPost(
     },
     data: body,
     ...(options || {}),
-  });
-}
-
-
-export async function testUsingPost(
-    body: API.ChartQueryRequest,
-) {
-  return request<any>('/api/chart/test', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body
   });
 }

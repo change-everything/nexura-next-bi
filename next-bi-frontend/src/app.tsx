@@ -1,13 +1,13 @@
 import Footer from '@/components/Footer';
+import SseComponent from '@/components/SseComponent';
 import { getLoginUserUsingGet } from '@/services/next-bi/userController';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history } from '@umijs/max';
-import { AvatarDropdown, AvatarName } from './components/RightContent/AvatarDropdown';
-import SseComponent from '@/components/SseComponent';
-import { errorConfig } from './requestErrorConfig';
 import defaultSettings from '../config/defaultSettings';
+import logo from '../public/logo.png';
+import { AvatarDropdown, AvatarName } from './components/RightContent/AvatarDropdown';
+import { errorConfig } from './requestErrorConfig';
 const loginPath = '/user/login';
-import logo from '../public/logo.svg';
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state

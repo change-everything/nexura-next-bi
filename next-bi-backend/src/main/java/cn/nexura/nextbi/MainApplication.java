@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 // 2024/1/22 如果说任务根本没提交到队列中（或者队列满了），可以用定时任务把失败状态的图表放到队列中（补偿）
 // 2024/1/22 统计用户生成图表的次数，甚至可以添加积分系统，消耗积分来智能分析
 // TODO: 2024/2/1 接入chatGPT
-// TODO: 2024/2/1 实现重新生成
+// 2024/2/2 实现重新生成
 // TODO: 2024/2/1 实现修改图表功能
 @SpringBootApplication
 @MapperScan("cn.nexura.nextbi.mapper")
