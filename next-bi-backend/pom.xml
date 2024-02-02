@@ -13,7 +13,7 @@
     </parent>
     <groupId>com.yupi</groupId>
     <artifactId>next-bi-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>next-bi-backend</name>
     <properties>
         <java.version>1.8</java.version>
