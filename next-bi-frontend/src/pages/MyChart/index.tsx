@@ -1,9 +1,9 @@
-import { Avatar, Card, List, message, Result, Space, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
 import { listChartByPageUsingPost } from '@/services/next-bi/chartController';
-import ReactECharts from 'echarts-for-react';
 import { useModel } from '@umijs/max';
+import { Avatar, Card, List, message, Result, Space, Typography } from 'antd';
 import Search from 'antd/es/input/Search';
+import ReactECharts from 'echarts-for-react';
+import React, { useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ const MyChart: React.FC = () => {
   const initSearchParams = {
     current: 1,
     pageSize: 10,
-    sortField: 'createTime',
+    sortField: 'create_time',
     sortOrder: 'desc',
   };
 

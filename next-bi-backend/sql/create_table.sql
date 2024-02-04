@@ -14,7 +14,7 @@ create table if not exists user
     user_account  varchar(256)                           not null comment '账号',
     user_password varchar(512)                           not null comment '密码',
     union_id      varchar(256)                           null comment '微信开放平台id',
-    mpOpen_id     varchar(256)                           null comment '公众号openId',
+    mp_open_id     varchar(256)                           null comment '公众号openId',
     user_name     varchar(256)                           null comment '用户昵称',
     user_avatar   varchar(1024)                          null comment '用户头像',
     user_profile  varchar(512)                           null comment '用户简介',

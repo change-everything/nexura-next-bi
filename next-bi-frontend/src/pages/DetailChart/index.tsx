@@ -2,7 +2,7 @@ import {
   getChartByIdUsingGet,
   reGenChartByAiAsyncUsingPost,
 } from '@/services/next-bi/chartController';
-import { UploadOutlined } from '@ant-design/icons';
+import { ThunderboltFilled, UploadOutlined } from '@ant-design/icons';
 import { HotTable } from '@handsontable/react';
 import {
   Button,
@@ -178,7 +178,8 @@ const AddChart: React.FC = () => {
                     loading={submitting}
                     disabled={submitting}
                   >
-                    重新生成
+                    重新生成(
+                    <ThunderboltFilled /> 5积分)
                   </Button>
                   <Button htmlType="reset" loading={submitting} disabled={submitting}>
                     重置

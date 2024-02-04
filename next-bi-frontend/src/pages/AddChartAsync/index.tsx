@@ -27,7 +27,7 @@ const AddChart: React.FC = () => {
       file: undefined,
     };
     try {
-      const res = await genChartByAiAsyncUsingPost(params, {});
+      const res = await genChartByAiAsyncUsingPost(params, {}, values.file.file.originFileObj);
       console.log(res);
       if (!res?.data) {
         message.error('生成失败，' + res.message);
@@ -124,7 +124,8 @@ const AddChart: React.FC = () => {
                     loading={submitting}
                     disabled={submitting}
                   >
-                    提交 (<ThunderboltFilled /> 5积分)
+                    提交(
+                    <ThunderboltFilled /> 5积分)
                   </Button>
                   <Button htmlType="reset" loading={submitting} disabled={submitting}>
                     重置

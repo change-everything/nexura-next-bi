@@ -1,4 +1,6 @@
+import { genChartByAiUsingPost } from '@/services/next-bi/chartController';
 import { UploadOutlined } from '@ant-design/icons';
+import { HotTable } from '@handsontable/react';
 import {
   Button,
   Card,
@@ -14,16 +16,10 @@ import {
   Upload,
 } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import React, { useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import Excel from 'exceljs';
-import { HotTable } from '@handsontable/react';
 import 'handsontable/dist/handsontable.full.min.css';
-import { file } from '@umijs/bundler-utils/compiled/@babel/types';
-import {
-  genChartAsyncByAiUsingPost,
-  genChartByAiUsingPost,
-} from '@/services/next-bi/chartController';
+import React, { useState } from 'react';
 
 const AddChart: React.FC = () => {
   const [chart, setChart] = useState<API.BiResponse>();
@@ -66,6 +62,7 @@ const AddChart: React.FC = () => {
       message.error('生成失败, ' + e.message);
     }
     setSubmitting(false);
+    return false;
   };
 
   return (
