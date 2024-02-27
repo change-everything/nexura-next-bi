@@ -1,6 +1,4 @@
-
 ![logo.png](next-bi-backend%2Fimage%2Flogo.png)
-
 
 # next BI
 ## 项目介绍

@@ -25,9 +25,9 @@ const Footer: React.FC = () => {
           blankTarget: true,
         },
         {
-          key: 'next BI',
-          title: 'next BI',
-          href: 'https://github.com/change-everything/nexura-next-bi',
+          key: '津ICP备2024012731号',
+          title: '津ICP备2024012731号',
+          href: 'https://beian.miit.gov.cn/#/Integrated/index',
           blankTarget: true,
         },
       ]}

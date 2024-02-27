@@ -20,7 +20,7 @@ public class MqInit {
 
         try {
             ConnectionFactory connectionFactory = new ConnectionFactory();
-            connectionFactory.setHost("119.3.252.5");
+            connectionFactory.setHost("43.143.20.63");
             connectionFactory.setPassword("pzvXxE6g0o");
             connectionFactory.setUsername("admin");
             Connection connection = connectionFactory.newConnection();

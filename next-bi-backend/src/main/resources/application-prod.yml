@@ -23,13 +23,14 @@ spring:
   # todo 需替换配置，然后取消注释
   redis:
     database: 1
-    host: 119.3.252.5
-    port: 37690
+    host: 43.143.20.63
+    port: 6389
     timeout: 5000
-    password: 8VU4pvAlo68v
+#    password: 0304@[smj]
+    Auth: 0304@[smj]
   rabbitmq:
     port: 5672
-    host: 119.3.252.5
+    host: 43.143.20.63
     username: admin
     password: pzvXxE6g0o
 
@@ -44,7 +45,8 @@ spring:
   servlet:
     multipart:
       # 大小限制
-      max-file-size: 10MB
+      max-file-size: 100MB
+      max-request-size: 150MB
 server:
   address: 0.0.0.0
   port: 18123

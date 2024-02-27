@@ -20,17 +20,17 @@ const SseComponent: React.FC = () => {
     const initSee = async () => {
       if (window.EventSource) {
         const source = new EventSource(
-          `http://119.3.252.5:28080/api/sse/createConnect?clientId=${currentUser?.id}`,
+          `https://nextbi.nexuracloud.cn/api/sse/createConnect?clientId=${currentUser?.id}`,
         );
 
         // 监听打开事件
-        source.addEventListener('open', (e) => {
+        source.onopen = (e) => {
           console.log('打开连接 onopen==>', e);
           // openNotification('建立连接成功')
-        });
+        };
 
         // 监听消息事件
-        source.addEventListener('message', (e) => {
+        source.onmessage = (e) => {
           console.log(e.data);
           const data = JSON.parse(e.data);
           const code = data.code;
@@ -42,12 +42,12 @@ const SseComponent: React.FC = () => {
             // 然后状态码为000 把客户端id储存在本地
             localStorage.setItem('clientId', msg);
           }
-        });
+        };
 
         // 监听错误事件
-        source.addEventListener('error', () => {
-          openNotification('已断开与后端连接');
-        });
+        source.onerror = () => {
+          openNotification('已断开与后端SSE连接, 请联系管理员');
+        };
 
         // 关闭连接
         // @ts-ignore
